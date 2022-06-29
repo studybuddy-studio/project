@@ -1,23 +1,21 @@
 <?php
-include_once "../config.php";
-
-function sanitizeInput($value)
-{
-    /* Sanitizing the input. */
-    return htmlspecialchars(stripslashes(trim($value)));
-}
+require_once "../config.php";
+require_once "utils.php";
 
 /* Setting the session variable to an empty string. */
 if (isset ($_POST['submit'])) {
     /* Getting the email and password from the form. */
-    $userEmail = $_POST['email'];
+    $logEmail = sanitizeInput($_POST['email']);
+    /* Sanitizing the email. */
+    $userEmail = filter_var($logEmail, FILTER_SANITIZE_EMAIL);
     $password = $_POST['password'];
 
     /* Hashing the password. */
     $hashedPassword = md5($password);
 
     // Write a  SQL query to match the email and password.
-    $loginCheckSQL = "SELECT * FROM `user` WHERE email=? AND password=?;";
+    $loginCheckSQL = "SELECT * FROM `user` WHERE email=? AND password=?";
+    /* Preparing the SQL statement. */
     $loginCheckStatement = $connection->prepare($loginCheckSQL);
     $loginCheckStatement->bind_param('ss', $userEmail, $hashedPassword);
     $loginCheckStatement->execute();
@@ -26,10 +24,12 @@ if (isset ($_POST['submit'])) {
     $loginCheckExecution = $loginCheckStatement->get_result();
 
     /* Checking if the result has one row. */
-    if ($loginCheckExecution->num_rows==1) {
+    if ($loginCheckExecution->num_rows == 1) {
+        session_start();
         header("Location:../index.php");
     } else {
         /* Setting the session variable to an error message. */
-        $_SESSION['login_error_message'] = "Invalid email or password.";
+        $error_message = "Invalid email or password.";
+        header("Location:../login.php?error_message=" . $error_message);
     }
 }

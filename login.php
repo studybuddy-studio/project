@@ -20,14 +20,22 @@ $_SESSION['login_error_message'] = "";
                         <input type="password" id="password" name="password" placeholder="********"
                                class="form-control">
                     </div>
+                    <div class="mb-4">
+                        <small class="text-danger">
+                            <?php
+                            if (isset($_GET['error_message'])) {
+                                echo $_GET['error_message'];
+                            }
+                            ?>
+                        </small>
+                    </div>
 
-                    <small class="text-danger">
-                        <?php
-                        echo $_SESSION['login_error_message'];
-                        ?>
-                    </small>
+                    <div>
+                        <a href="register.php" class="mt-2">Don't have an account? Register now</a>
+                    </div>
 
-                    <input class="btn btn-primary btn-block mt-5" type="submit" name="submit"/>
+
+                    <input class="btn btn-primary btn-block mt-2" type="submit" name="submit"/>
                 </form>
             </div>
         </div>
