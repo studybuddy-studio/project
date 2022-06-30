@@ -2,6 +2,7 @@
 require_once "../config.php";
 require_once "utils.php";
 
+
 /* Setting the session variable to an empty string. */
 if (isset ($_POST['submit'])) {
     /* Getting the email and password from the form. */

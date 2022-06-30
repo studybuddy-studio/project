@@ -1,26 +1,24 @@
 <?php
 include_once "header.php";
-$_SESSION['login_error_message'] = "";
+include_once "navbar.php";
 ?>
+
     <div class="container">
         <div class="row mt-5">
-            <div class="col-6" style="padding:0;">
-                <img src="https://resize.indiatvnews.com/en/resize/newbucket/715_-/2021/12/study-room-1639102725.jpg"
-                     alt="Study Photo" class="img-fluid mt-5">
-            </div>
-            <div class="offset-1 col-5" style="padding:0;">
-                <form action="form_handlers/login_handler.php" method="post">
-                    <h1>Login Form</h1>
+            <div class="col-5" style="padding:0;">
+                <h1>Login Form</h1>
+                <form class="form" method="post" action="form_handlers/login_handler.php">
                     <div class="form-group mt-5">
                         <label for="email">Email</label>
-                        <input type="email" id="email" name="email" placeholder="Enter email here" class="form-control">
+                        <input type="email" id="email" name="email" placeholder="Enter your email" class="form-control">
                     </div>
                     <div class="form-group mt-2">
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" placeholder="********"
                                class="form-control">
                     </div>
-                    <div class="mb-4">
+
+                    <p class="my-2">
                         <small class="text-danger">
                             <?php
                             if (isset($_GET['error_message'])) {
@@ -28,16 +26,20 @@ $_SESSION['login_error_message'] = "";
                             }
                             ?>
                         </small>
-                    </div>
-
-                    <div>
-                        <a href="register.php" class="mt-2">Don't have an account? Register now</a>
-                    </div>
-
-
-                    <input class="btn btn-primary btn-block mt-2" type="submit" name="submit"/>
+                    </p>
+                    <input class="btn btn-primary btn-block" name="submit" type="submit" value="Login">
                 </form>
+                <div>
+                    <p class="mt-3 text-center">
+                        <span>Don't have an account? <a
+                                href="file:///C:/Users/user/Desktop/login%20page/register.html">Register Now!</a></span>
+                    </p>
+                </div>
+            </div>
+            <div class="offset-1 col-6" style="padding:0;">
+                <img src="loginlogo2.png" alt="login page" width="350px" height="400px">
             </div>
         </div>
+
     </div>
 <?php include_once "footer.php" ?>

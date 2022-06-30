@@ -2,19 +2,19 @@
 require_once "../config.php";
 require_once "utils.php";
 
-function validateName($value)
+function validateName($value, $type)
 {
 //    Empty check
     if (empty($value)) {
-        return "First name is required.";
+        return $type . " name is required.";
     }
 //    Length check
     if (strlen($value) < 2) {
-        return "First name must be at least 2 characters long.";
+        return $type . " name must be at least 2 characters long.";
     }
 //    Special characters check
     if (!preg_match("/^[a-zA-Z ]*$/", $value)) {
-        return "First name must contain only letters and spaces.";
+        return $type . " name must contain only english letters and spaces.";
     }
     return "";
 }
@@ -113,15 +113,15 @@ if (isset ($_POST['register']))
     $tnc = $_POST['tnc'];
 
     $error_array = array(
-        "first_name" => validateName($first_name),
-        "last_name" => validateName($last_name),
+        "first_name" => validateName($first_name, "First"),
+        "last_name" => validateName($last_name, "Last"),
         "email" => validateEmail($email),
         "password" => validatePassword($password, $confirm_password),
         "date_of_birth" => validateDateOfBirth($date_of_birth),
         "tnc" => validateTNC($tnc)
     );
 
-    /* Checking if any of the keys in the array contains a non empty string. */
+    /* Checking if any of the keys in the array contains a non-empty string. */
     $error_flag = false;
     foreach ($error_array as $key => $value) {
         if (!empty($value)) {
