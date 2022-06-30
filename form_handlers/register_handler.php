@@ -19,7 +19,7 @@ function validateName($value, $type)
     return "";
 }
 
-function validateEmail($value)
+function validateEmail($connection, $value)
 {
 //    Empty check
     if (empty($value)) {
@@ -28,6 +28,15 @@ function validateEmail($value)
 //    Regex check
     if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
         return "Invalid email format.";
+    }
+//    Check if email already exist.
+    $email_check_SQL = "SELECT * FROM user WHERE email=?;";
+    $email_check_query = $connection->prepare($email_check_SQL);
+    $email_check_query->bind_param('s', $value);
+    $email_check_query->execute();
+    $email_check_execution = $email_check_query->get_result();
+    if ($email_check_execution->num_rows == 1) {
+        return "Email already registered";
     }
     return "";
 }
@@ -55,9 +64,13 @@ function validateDateOfBirth($value)
     if (empty($value)) {
         return "Date of birth is required.";
     }
-    $date_of_birth = getdate($value);
+    $dob = date_create($value);
+    $dob_year = date_format($dob, "Y");
+    $current_year = date("Y");
+    var_dump(intval($dob_year));
+    var_dump(intval($current_year) - 3);
     //  Check if the year is greater than or equal to the current year minus 3.
-    if ($date_of_birth['year'] >= date('Y') - 3) {
+    if (intval($dob_year) >= intval($current_year) - 3) {
         return "You must be at least 3 years old to register.";
     }
     return "";
@@ -67,6 +80,8 @@ function validateTNC($value)
 {
 //    Empty check
     if (empty($value)) {
+        return "No data sent";
+    } elseif ($value == "off") {
         return "You must accept the terms and conditions.";
     }
     return "";
@@ -79,13 +94,7 @@ function register($connection, $first_name, $last_name, $email, $password, $date
     $registerStatement = $connection->prepare($registerSQL);
     $registerStatement->bind_param('sssss', $first_name, $last_name, $email, $hashedPassword, $date_of_birth);
     $registerStatement->execute();
-    $registerExecution = $registerStatement->get_result();
-    if ($registerExecution->num_rows == 1) {
-        return true;
-    } else {
-        return false;
-    }
-
+    return $registerStatement;
 }
 
 
@@ -98,8 +107,7 @@ function redirectToIndexPage($email, $first_name, $last_name)
     header("Location:../index.php");
 }
 
-if (isset ($_POST['register']))
-{
+if (isset ($_POST['register'])) {
     $first_name = sanitizeInput($_POST['first_name']);
     // Convert into title case.
     $first_name = ucwords($first_name);
@@ -113,12 +121,12 @@ if (isset ($_POST['register']))
     $tnc = $_POST['tnc'];
 
     $error_array = array(
-        "first_name" => validateName($first_name, "First"),
-        "last_name" => validateName($last_name, "Last"),
-        "email" => validateEmail($email),
-        "password" => validatePassword($password, $confirm_password),
-        "date_of_birth" => validateDateOfBirth($date_of_birth),
-        "tnc" => validateTNC($tnc)
+        "first_name_error" => validateName($first_name, "First"),
+        "last_name_error" => validateName($last_name, "Last"),
+        "email_error" => validateEmail($connection, $email),
+        "password_error" => validatePassword($password, $confirm_password),
+        "date_of_birth_error" => validateDateOfBirth($date_of_birth),
+        "tnc_error" => validateTNC($tnc)
     );
 
     /* Checking if any of the keys in the array contains a non-empty string. */

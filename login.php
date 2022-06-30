@@ -32,7 +32,7 @@ include_once "navbar.php";
                 <div>
                     <p class="mt-3 text-center">
                         <span>Don't have an account? <a
-                                href="file:///C:/Users/user/Desktop/login%20page/register.html">Register Now!</a></span>
+                                href="register.php">Register Now!</a></span>
                     </p>
                 </div>
             </div>
