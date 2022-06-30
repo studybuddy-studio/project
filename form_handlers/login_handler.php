@@ -26,7 +26,8 @@ if (isset ($_POST['submit'])) {
 
     /* Checking if the result has one row. */
     if ($loginCheckExecution->num_rows == 1) {
-        session_start();
+        $_SESSION['email'] = $userEmail;
+        $_SESSION['logged_in'] = true;
         header("Location:../index.php");
     } else {
         /* Setting the session variable to an error message. */

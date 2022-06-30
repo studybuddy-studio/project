@@ -100,10 +100,8 @@ function register($connection, $first_name, $last_name, $email, $password, $date
 
 function redirectToIndexPage($email, $first_name, $last_name)
 {
-    session_start();
     $_SESSION['email'] = $email;
-    $_SESSION['first_name'] = $first_name;
-    $_SESSION['last_name'] = $last_name;
+    $_SESSION['logged_in'] = true;
     header("Location:../index.php");
 }
 
