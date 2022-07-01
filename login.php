@@ -26,6 +26,13 @@ include_once "navbar.php";
                             }
                             ?>
                         </small>
+                        <small class="text-success">
+                            <?php
+                            if (isset($_GET['success_message'])) {
+                                echo $_GET['success_message'];
+                            }
+                            ?>
+                        </small>
                     </p>
                     <input class="btn btn-primary btn-block" name="submit" type="submit" value="Login">
                 </form>

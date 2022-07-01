@@ -106,6 +106,7 @@ function redirectToIndexPage($email, $first_name, $last_name)
 }
 
 if (isset ($_POST['register'])) {
+    /* Sanitizing the input from the form. */
     $first_name = sanitizeInput($_POST['first_name']);
     // Convert into title case.
     $first_name = ucwords($first_name);
