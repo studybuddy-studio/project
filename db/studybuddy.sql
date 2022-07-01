@@ -50,12 +50,19 @@ CREATE TABLE  IF NOT EXISTS `studybuddy`.`Resource` (
     `content_extension` VARCHAR(10),  -- File extension
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `modified_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `author` INT NOT NULL, -- The author for the resource.
     `uploaded_by` INT NOT NULL, -- The user who uploads the resource.
     PRIMARY KEY (`resource_id`),
     FOREIGN KEY (`category`) REFERENCES Category(`category_id`),
-    FOREIGN KEY (`uploaded_by`) REFERENCES User(`user_id`),
-    FOREIGN KEY (`author`) REFERENCES Author(`author_id`)
+    FOREIGN KEY (`uploaded_by`) REFERENCES User(`user_id`)
+) ENGINE = InnoDB;
+
+-- Resource Author Table
+CREATE TABLE  IF NOT EXISTS `studybuddy`.`ResourceAuthor` (
+    `resource_id` INT NOT NULL, -- Foreign key
+    `author_id` INT NOT NULL, -- Foreign key
+    PRIMARY KEY (`resource_id`, `author_id`),
+    FOREIGN KEY (`resource_id`) REFERENCES Resource(`resource_id`),
+    FOREIGN KEY (`author_id`) REFERENCES Author(`author_id`)
 ) ENGINE = InnoDB;
 
 
