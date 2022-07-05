@@ -67,8 +67,6 @@ function validateDateOfBirth($value)
     $dob = date_create($value);
     $dob_year = date_format($dob, "Y");
     $current_year = date("Y");
-    var_dump(intval($dob_year));
-    var_dump(intval($current_year) - 3);
     //  Check if the year is greater than or equal to the current year minus 3.
     if (intval($dob_year) >= intval($current_year) - 3) {
         return "You must be at least 3 years old to register.";
@@ -76,23 +74,58 @@ function validateDateOfBirth($value)
     return "";
 }
 
+function validateDisplayPicture($value)
+{
+    if (!empty($value)) {
+        $ACCEPTABLE_FILE_EXTENSIONS = array("jpg", "jpeg", "png");
+        $file_extension = pathinfo($value, PATHINFO_EXTENSION);
+//        Convert the file extension to lower case.
+        $file_extension = strtolower($file_extension);
+        if (!in_array($file_extension, $ACCEPTABLE_FILE_EXTENSIONS)) {
+            return strtoupper($file_extension) . " file extension is not allowed.";
+        }
+    }
+    return "";
+}
+
 function validateTNC($value)
 {
 //    Empty check
-    if (empty($value)) {
-        return "No data sent";
-    } elseif ($value == "off") {
+    if (empty($value) || $value != "on") {
         return "You must accept the terms and conditions.";
     }
     return "";
 }
 
-function register($connection, $first_name, $last_name, $email, $password, $date_of_birth)
+
+function storeImageAndGetPath($image_file)
+{
+// Store the image in file system from the form and return the stored path.
+    /**
+     * It takes an image file, stores it in the uploads/users directory, and returns the path to the image
+     *
+     * @param image_file The image file that was uploaded.
+     *
+     * @return The image path.
+     */
+//    Generate an absolute path
+    $uploads_dir = realpath(dirname(__FILE__)) . "\..\uploads\users";
+    $image_name = $image_file["name"];
+    $image_tmp_name = $image_file["tmp_name"];
+    $extension = pathinfo($image_name, PATHINFO_EXTENSION);
+    $new_file_name = uniqid() . "." . $extension;
+    $image_path = $uploads_dir . "/" . $new_file_name;
+    move_uploaded_file($image_tmp_name, $image_path);
+    return $image_path;
+}
+
+
+function register($connection, $first_name, $last_name, $email, $password, $date_of_birth, $image_path)
 {
     $hashedPassword = md5($password);
-    $registerSQL = "INSERT INTO `user` (`first_name`, `last_name`, `email`, `password`, `date_of_birth`) VALUES (?, ?, ?, ?, ?)";
+    $registerSQL = "INSERT INTO `user` (`first_name`, `last_name`, `email`, `password`, `date_of_birth`, `display_picture`) VALUES (?, ?, ?, ?, ?, ?)";
     $registerStatement = $connection->prepare($registerSQL);
-    $registerStatement->bind_param('sssss', $first_name, $last_name, $email, $hashedPassword, $date_of_birth);
+    $registerStatement->bind_param('ssssss', $first_name, $last_name, $email, $hashedPassword, $date_of_birth, $image_path);
     $registerStatement->execute();
     return $registerStatement;
 }
@@ -117,7 +150,10 @@ if (isset ($_POST['register'])) {
     $date_of_birth = ($_POST['date_of_birth']);
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
+    $display_picture = $_FILES['display_picture'];
     $tnc = $_POST['tnc'];
+
+    var_dump($display_picture);
 
     $error_array = array(
         "first_name_error" => validateName($first_name, "First"),
@@ -125,6 +161,7 @@ if (isset ($_POST['register'])) {
         "email_error" => validateEmail($connection, $email),
         "password_error" => validatePassword($password, $confirm_password),
         "date_of_birth_error" => validateDateOfBirth($date_of_birth),
+        "display_picture_error" => validateDisplayPicture($display_picture["name"]),
         "tnc_error" => validateTNC($tnc)
     );
 
@@ -138,7 +175,9 @@ if (isset ($_POST['register'])) {
     }
 
     if (!$error_flag) {
-        $register_success = register($connection, $first_name, $last_name, $email, $password, $date_of_birth);
+        $image_path = storeImageAndGetPath($display_picture);
+        var_dump($image_path);
+        $register_success = register($connection, $first_name, $last_name, $email, $password, $date_of_birth, $image_path);
         if ($register_success) {
             redirectToIndexPage($email, $first_name, $last_name);
         }

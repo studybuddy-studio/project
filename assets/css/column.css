@@ -1,0 +1,36 @@
+.column {
+
+.left {
+    width: 25%;
+}
+
+.right {
+    width: 75%;
+}
+
+}
+.brand {
+    font-size: 35px;
+;
+    color: #51387a;
+}
+
+img.avatar {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    vertical-align: middle;
+    border: 3px solid pink;
+}
+
+.box {
+    2px,
+    gray;
+
+
+}
+
+.fa-square-caret-up {
+    margin-top: 10rem;
+    margin-left: 33px;
+}

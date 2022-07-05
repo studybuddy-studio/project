@@ -11,6 +11,11 @@ if (!isset($_SESSION['logged_in'])) {
 
     </p class="display-4 text-center">
            Welcome to study buddy
+           <?php
+              if (isset($_SESSION['email'])) {
+                echo $_SESSION['email'];
+              }
+ ?>
     <p>
 
 <?php include_once "footer.php" ?>

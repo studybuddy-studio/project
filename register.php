@@ -8,7 +8,7 @@ include_once "navbar.php";
     <div class="row mt-2">
         <div class="col-5" style="padding:0;">
             <h1>Register</h1>
-            <form action="form_handlers/register_handler.php" method="post">
+            <form action="form_handlers/register_handler.php" method="post" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col">
                         <div class="form-group mt-1">
@@ -31,8 +31,7 @@ include_once "navbar.php";
                                    name="last_name">
                             <small class="text-danger">
                                 <?php
-                                if (isset($_GET['last_name_error']))
-                                {
+                                if (isset($_GET['last_name_error'])) {
                                     echo $_GET['last_name_error'];
                                 }
                                 ?>
@@ -45,8 +44,7 @@ include_once "navbar.php";
                     <input type="email" id="email" name="email" placeholder="Enter your email" class="form-control">
                     <small class="text-danger">
                         <?php
-                        if (isset($_GET['email_error']))
-                        {
+                        if (isset($_GET['email_error'])) {
                             echo $_GET['email_error'];
                         }
                         ?>
@@ -60,8 +58,7 @@ include_once "navbar.php";
                                    class="form-control">
                             <small class="text-danger">
                                 <?php
-                                if (isset($_GET['password_error']))
-                                {
+                                if (isset($_GET['password_error'])) {
                                     echo $_GET['password_error'];
                                 }
                                 ?>
@@ -81,11 +78,10 @@ include_once "navbar.php";
                     <div class="col">
                         <div class="form-group">
                             <label for="dob">Date of Birth</label>
-                            <input type="date" class="form-control" name="date_of_birth"/>
+                            <input type="date" id="dob" class="form-control" name="date_of_birth"/>
                             <small class="text-danger">
                                 <?php
-                                if (isset($_GET['date_of_birth_error']))
-                                {
+                                if (isset($_GET['date_of_birth_error'])) {
                                     echo $_GET['date_of_birth_error'];
                                 }
                                 ?>
@@ -93,6 +89,39 @@ include_once "navbar.php";
                         </div>
                     </div>
                 </div>
+
+                <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <select class="form-control" id="title" aria-describedby="titleHelp" placeholder="Select a title" name="title" required>
+                            <option value="" disabled selected >Select a title</option>
+                            <option value="Student">Student</option>
+                            <option value="Teacher">Teacher</option>
+                            <option value="Parent">Parent</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <small id="categoryHelp" class="form-text text-muted">Some help text about category</small>
+                    </div>
+                </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="display_picture">Display Picture</label>
+                            <input type="file" id="display_picture" class="form-control-file" name="display_picture"/>
+                            <small class="text-danger">
+                                <?php
+                                if (isset($_GET['display_picture_error'])) {
+                                    echo $_GET['display_picture_error'];
+                                }
+                                ?>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
 
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="gridCheck" name="tnc">
@@ -102,8 +131,7 @@ include_once "navbar.php";
                     </label>
                     <small class="d-block text-danger">
                         <?php
-                        if (isset($_GET['tnc_error']))
-                        {
+                        if (isset($_GET['tnc_error'])) {
                             echo $_GET['tnc_error'];
                         }
                         ?>
