@@ -60,6 +60,8 @@ CREATE TABLE  IF NOT EXISTS `studybuddy`.`Resource` (
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `modified_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `uploaded_by` INT NOT NULL, -- The user who uploads the resource.
+    `upvote` INT NOT NULL DEFAULT 0,
+    `downvote` INT NOT NULL DEFAULT 0,
     PRIMARY KEY (`resource_id`),
     FOREIGN KEY (`category`) REFERENCES Category(`category_id`),
     FOREIGN KEY (`uploaded_by`) REFERENCES User(`user_id`)

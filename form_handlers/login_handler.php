@@ -26,12 +26,18 @@ if (isset ($_POST['submit'])) {
 
     /* Checking if the result has one row. */
     if ($loginCheckExecution->num_rows == 1) {
+
+        $user = $loginCheckExecution->fetch_assoc();
+        $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['email'] = $userEmail;
         $_SESSION['logged_in'] = true;
+        /* Redirecting the user to the index page. */
         header("Location:../index.php");
+    }else {
+        header("Location: ../login.php?error_message=Invalid email or password.");
+    }
     } else {
         /* Setting the session variable to an error message. */
         $error_message = "Invalid email or password.";
         header("Location:../login.php?error_message=" . $error_message);
     }
-}

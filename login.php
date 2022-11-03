@@ -44,7 +44,7 @@ include_once "navbar.php";
                 </div>
             </div>
             <div class="offset-1 col-6" style="padding:0;">
-                <img src="loginlogo2.png" alt="login page" width="350px" height="400px">
+                <img src="assets/images/loginlogo2.png" alt="login page" width="350px" height="400px">
             </div>
         </div>
 

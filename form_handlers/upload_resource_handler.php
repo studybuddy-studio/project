@@ -152,22 +152,46 @@ function createAuthors($connection, $list_of_authors)
     return $inserted_authors;
 }
 
-//to upload the values to sql.
+
+/**
+ * It takes in a bunch of parameters, creates a SQL statement, prepares the SQL statement, executes the SQL statement, gets
+ * the last inserted id, creates another SQL statement, prepares the SQL statement, loops through the array of authors, and
+ * then returns the resource id.
+ *
+ * @param connection The connection to the database.
+ * @param title The title of the resource.
+ * @param category The category of the resource.
+ * @param short_description This is a short description of the resource.
+ * @param long_description This is the long description of the resource.
+ * @param content The content of the resource.
+ * @param content_extension The extension of the file that was uploaded.
+ * @param uploaded_by The id of the user who uploaded the resource.
+ */
 function uploadResource($connection, $title, $category, $short_description, $long_description, $content, $content_extension, $uploaded_by)
 {
     /* Creating a SQL statement that will insert a new resource into the database. */
-    $create_resource_sql = "INSERT INTO Resource (title, category, short_description, long_description, content, content_extension, uploaded_by) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $create_resource_sql = "INSERT INTO Resource (title, category, short_description, long_description, content, content_extension, uploaded_by,) VALUES (?, ?, ?, ?, ?, ?, ?)";
     /* Preparing the SQL statement. */
     $create_resource_statement = $connection->prepare($create_resource_sql);
     /* Executing the SQL statement. */
     $create_resource_statement->execute([$title, $category, $short_description, $long_description, $content, $content_extension, $uploaded_by]);
     /* Getting the last inserted id. */
-    // $resource_id = $connection->insert_id;
+    $resource_id = $connection->insert_id;
+    return $resource_id;
+}
+
+
+function createResourceAuthors($connection, $resource_id, $list_of_authors)
+{
     /* Creating a SQL statement that will insert a new author-resource relationship into the database. */
-    $create_author_resource_sql = "INSERT INTO author_resource (author_id, resource_id) VALUES (?, ?)";
+    $create_author_resource_sql = "INSERT INTO ResourceAuthor (resource_id, author_id) VALUES (?, ?)";
     /* Preparing the SQL statement. */
     $create_author_resource_statement = $connection->prepare($create_author_resource_sql);
     /* Looping through the array of authors. */
+    foreach ($list_of_authors as $author) {
+        /* Executing the SQL statement. */
+        $create_author_resource_statement->execute([ $resource_id, $author]);
+    }
 }
 
 
@@ -182,12 +206,36 @@ if (isset($_POST['upload'])) {
     $authors = $_POST['authors'];
     $resource_file = $_FILES['resource_file'];
     $header_image = $_FILES['header_image'];
-
     //    echo all the data to the console.
     echo $title . "<br>";
     echo $category . "<br>";
     echo $short_description . "<br>";
     echo $long_description . "<br>";
     echo $authors . "<br>";
+    /* Dumping the contents of the `$resource_file` and `$header_image` variables to the console. */
     var_dump($resource_file, $header_image);
+
+//    Getting the file path of the resource file.
+    $resource_file_path = $resource_file['tmp_name'];
+
+    // Getting the extension of the resource file.
+    $resource_file_extension = pathinfo($resource_file['name'], PATHINFO_EXTENSION);
+
+    // Getting the user from the session.
+    $uploaded_by = $_SESSION['user_id'];
+
+    $created_authors = createAuthors($connection, splitAuthors($authors));
+
+    $resource_id = uploadResource(
+        $connection,
+        $title,
+        $category,
+        $short_description,
+        $long_description,
+        $resource_file_path,
+        $resource_file_extension,
+        $uploaded_by
+    );
+
+    createResourceAuthors($connection, $resource_id, $created_authors);
 }

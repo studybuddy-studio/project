@@ -43,7 +43,7 @@ function getAllCategories($connection) {
                 /* Looping through the array of categories. */
                 foreach ($categories as $category) {
                     /* Printing the category. */
-                    echo "<option value='" . $category['id'] . "'>" . $category['name'] . "</option>";
+                    echo "<option value='" . $category['category_id'] . "'>" . $category['name'] . "</option>";
                 }
                 ?>
             </select>

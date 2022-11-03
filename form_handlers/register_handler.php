@@ -6,6 +6,7 @@ function validateName($value, $type)
 {
 //    Empty check
     if (empty($value)) {
+        /* Returning a string. */
         return $type . " name is required.";
     }
 //    Length check
