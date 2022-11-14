@@ -26,6 +26,14 @@ function validateCategory($value)
     }
     return "";
 }
+function validateSubject($value)
+{
+    /* Checking if the subject is not empty. */
+    if (empty($value)) {
+        return " Please enter the subject.";
+    }
+    return "";
+}
 
 function validateShortDescription($value)
 {
@@ -137,7 +145,7 @@ function validateAuthors($value)
 function createAuthors($connection, $list_of_authors)
 {
     /* Creating a SQL statement that will insert a new author into the database. */
-    $create_author_sql = "INSERT INTO authors (name) VALUES (?)";
+    $create_author_sql = "INSERT INTO author (name) VALUES (?)";
     /* Preparing the SQL statement. */
     $create_author_statement = $connection->prepare($create_author_sql);
     /* Creating an empty array. */
@@ -146,6 +154,7 @@ function createAuthors($connection, $list_of_authors)
     foreach ($list_of_authors as $author) {
         /* Executing the SQL statement. */
         $create_author_statement->execute([$author]);
+        $last_id = uniqid();
         /* Getting the last inserted id. */
         $inserted_authors[] = $connection->insert_id;
     }
@@ -167,24 +176,25 @@ function createAuthors($connection, $list_of_authors)
  * @param content_extension The extension of the file that was uploaded.
  * @param uploaded_by The id of the user who uploaded the resource.
  */
-function uploadResource($connection, $title, $category, $short_description, $long_description, $content, $content_extension, $uploaded_by)
+function uploadResource($connection, $title, $category,$target_file, $subject, $short_description, $long_description, $content, $content_extension, $uploaded_by)
 {
     /* Creating a SQL statement that will insert a new resource into the database. */
-    $create_resource_sql = "INSERT INTO Resource (title, category, short_description, long_description, content, content_extension, uploaded_by,) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $create_resource_sql = "INSERT INTO resource (title, category,header_image, subject, short_description, long_description, content, content_extension, uploaded_by) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     /* Preparing the SQL statement. */
+
     $create_resource_statement = $connection->prepare($create_resource_sql);
     /* Executing the SQL statement. */
-    $create_resource_statement->execute([$title, $category, $short_description, $long_description, $content, $content_extension, $uploaded_by]);
-    /* Getting the last inserted id. */
+    $create_resource_statement->bind_param("sissssssi", $title, $category, $target_file, $subject, $short_description, $long_description, $content, $content_extension, $uploaded_by);
+    $create_resource_statement->execute();
     $resource_id = $connection->insert_id;
     return $resource_id;
 }
 
-
 function createResourceAuthors($connection, $resource_id, $list_of_authors)
 {
     /* Creating a SQL statement that will insert a new author-resource relationship into the database. */
-    $create_author_resource_sql = "INSERT INTO ResourceAuthor (resource_id, author_id) VALUES (?, ?)";
+    $create_author_resource_sql = "INSERT INTO resourceauthor (resource_id, author_name) VALUES (?, ?)";
     /* Preparing the SQL statement. */
     $create_author_resource_statement = $connection->prepare($create_author_resource_sql);
     /* Looping through the array of authors. */
@@ -201,22 +211,26 @@ if (isset($_POST['upload'])) {
     $title = ucwords($_POST['title']);
     $category = $_POST['category'];
     /* Sanitizing the input from the form. */
+    $subject = sanitizeInput($_POST['subject']);
     $short_description = sanitizeInput($_POST['short_description']);
     $long_description = $_POST['long_description'];
     $authors = $_POST['authors'];
     $resource_file = $_FILES['resource_file'];
     $header_image = $_FILES['header_image'];
-    //    echo all the data to the console.
-    echo $title . "<br>";
-    echo $category . "<br>";
-    echo $short_description . "<br>";
-    echo $long_description . "<br>";
-    echo $authors . "<br>";
-    /* Dumping the contents of the `$resource_file` and `$header_image` variables to the console. */
-    var_dump($resource_file, $header_image);
 
-//    Getting the file path of the resource file.
-    $resource_file_path = $resource_file['tmp_name'];
+
+    $target_dir = "uploads/";
+    $target_file = $target_dir . basename($_FILES["header_image"]["name"]);
+    $uploadOk = 1;
+    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+    $check = getimagesize($_FILES["header_image"]["tmp_name"]);
+    move_uploaded_file($_FILES["header_image"]["tmp_name"], $target_file);
+
+
+    $target_dir_resources = "resources/";
+    $target_file_resources = $target_dir_resources . basename($_FILES["resource_file"]["name"]);
+    move_uploaded_file($_FILES["resource_file"]["tmp_name"], $target_file_resources);
+
 
     // Getting the extension of the resource file.
     $resource_file_extension = pathinfo($resource_file['name'], PATHINFO_EXTENSION);
@@ -230,12 +244,21 @@ if (isset($_POST['upload'])) {
         $connection,
         $title,
         $category,
+        $target_file,
+        $subject,
         $short_description,
         $long_description,
-        $resource_file_path,
+        $target_file_resources,
         $resource_file_extension,
         $uploaded_by
     );
 
+
     createResourceAuthors($connection, $resource_id, $created_authors);
+    $_SESSION['success_msg'] = "Resource uploaded successfully.";
+    $_SESSION['title_msg'] = "Resources";
+    header("Location: ../card.php?resource_id=$resource_id");
 }
+
+
+?>

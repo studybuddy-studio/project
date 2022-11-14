@@ -29,12 +29,19 @@ if (isset ($_POST['submit'])) {
 
         $user = $loginCheckExecution->fetch_assoc();
         $_SESSION['user_id'] = $user['user_id'];
+        $_SESSION['full_name'] = $user['first_name'];
         $_SESSION['email'] = $userEmail;
+        $_SESSION['is_admin'] = $user['is_admin'];
         $_SESSION['logged_in'] = true;
+
+        $_SESSION['success_msg'] = "You have successfully logged in.";
+        $_SESSION['title_msg'] = "Login";
         /* Redirecting the user to the index page. */
         header("Location:../index.php");
     }else {
-        header("Location: ../login.php?error_message=Invalid email or password.");
+        $_SESSION['error_msg'] = "Invalid email or password.";
+        $_SESSION['title_msg'] = "Login";
+        header("Location: ../login.php");
     }
     } else {
         /* Setting the session variable to an error message. */

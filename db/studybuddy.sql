@@ -49,7 +49,7 @@ CREATE TABLE  IF NOT EXISTS `studybuddy`.`Resource` (
     `title` VARCHAR(100) NOT NULL,
     -- Yeso garna le null value basdaina ra empty rakhna painchha
     `short_description` VARCHAR(500) NOT NULL DEFAULT '',
-    `long_description` TEXT NOT NULL,
+    `long_description` TEXT,
     `subject` VARCHAR(200) NOT NULL,
     -- Content laai chahi kina null gareko vane,
     -- long description ra short description ko le pani hamilai content pura huna sakcha
@@ -58,7 +58,6 @@ CREATE TABLE  IF NOT EXISTS `studybuddy`.`Resource` (
     `content` VARCHAR(1011),  -- File Path
     `content_extension` VARCHAR(10),  -- File extension
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `modified_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `uploaded_by` INT NOT NULL, -- The user who uploads the resource.
     `upvote` INT NOT NULL DEFAULT 0,
     `downvote` INT NOT NULL DEFAULT 0,

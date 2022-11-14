@@ -121,22 +121,22 @@ function storeImageAndGetPath($image_file)
 }
 
 
-function register($connection, $first_name, $last_name, $email, $password, $date_of_birth, $image_path)
+function register($connection, $first_name, $last_name, $email, $password, $date_of_birth, $image_path, $title)
 {
     $hashedPassword = md5($password);
-    $registerSQL = "INSERT INTO `user` (`first_name`, `last_name`, `email`, `password`, `date_of_birth`, `display_picture`) VALUES (?, ?, ?, ?, ?, ?)";
+    $registerSQL = "INSERT INTO `user` (`first_name`, `last_name`, `email`, `password`, `date_of_birth`, `display_picture`, `title`) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $registerStatement = $connection->prepare($registerSQL);
-    $registerStatement->bind_param('ssssss', $first_name, $last_name, $email, $hashedPassword, $date_of_birth, $image_path);
+    $registerStatement->bind_param('sssssss', $first_name, $last_name, $email, $hashedPassword, $date_of_birth, $image_path,$title);
     $registerStatement->execute();
     return $registerStatement;
 }
 
 
-function redirectToIndexPage($email, $first_name, $last_name)
+function redirectToIndexPage()
 {
-    $_SESSION['email'] = $email;
-    $_SESSION['logged_in'] = true;
-    header("Location:../index.php");
+    $_SESSION['success_msg'] = "You have been register successfully.";
+    $_SESSION['title_msg'] = "Register";
+    header("Location:../login.php");
 }
 
 if (isset ($_POST['register'])) {
@@ -153,6 +153,7 @@ if (isset ($_POST['register'])) {
     $confirm_password = $_POST['confirm_password'];
     $display_picture = $_FILES['display_picture'];
     $tnc = $_POST['tnc'];
+    $title = sanitizeInput($_POST['title']);
 
     var_dump($display_picture);
 
@@ -178,9 +179,9 @@ if (isset ($_POST['register'])) {
     if (!$error_flag) {
         $image_path = storeImageAndGetPath($display_picture);
         var_dump($image_path);
-        $register_success = register($connection, $first_name, $last_name, $email, $password, $date_of_birth, $image_path);
+        $register_success = register($connection, $first_name, $last_name, $email, $password, $date_of_birth, $image_path, $title);
         if ($register_success) {
-            redirectToIndexPage($email, $first_name, $last_name);
+            redirectToIndexPage();
         }
     } else {
         $query_string = http_build_query($error_array);
@@ -188,3 +189,4 @@ if (isset ($_POST['register'])) {
     }
 
 }
+?>

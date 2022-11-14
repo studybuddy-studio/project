@@ -1,2 +1,2 @@
-uploads/users/*
-!/uploads/users/.gitkeep
+form_handlers/uploads/users/*
+!/form_handlers/uploads/users/.gitkeep

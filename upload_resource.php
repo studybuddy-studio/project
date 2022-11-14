@@ -2,6 +2,9 @@
 require_once "config.php";
 include_once "header.php";
 include_once "navbar.php";
+if(!isset($_SESSION['logged_in'])){
+    header('Location:login.php');
+}
 
 function getAllCategories($connection) {
     /* Selecting all the data from the category table. */
@@ -50,19 +53,24 @@ function getAllCategories($connection) {
             <small id="categoryHelp" class="form-text text-muted">Some help text about category</small>
         </div>
         <div class="form-group">
+            <label for="subject">Subject</label>
+            <input type="text" class="form-control" id="subject" aria-describedby="subjectHelp" placeholder="Enter the subject" name="subject" required>
+            <small id="subjectHelp" class="form-text text-muted">Please enter the full form of the subject.</small>
+        </div>
+        <div class="form-group">
             <label for="short_description">Short Description</label>
             <input type="text" class="form-control" id="short_description" aria-describedby="short_descriptionHelp" placeholder="Enter short description" name="short_description" required>
-            <small id="short_descriptionHelp" class="form-text text-muted">Your description is limited to 200 characters.</small>
+            <small id="short_descriptionHelp" class="form-text text-muted">Please specify the institution/university if your resource is specific to them.</small>
         </div>
         <div class="form-group">
             <label for="long_description">Long Description</label>
             <input type="text" class="form-control" id="long_description" aria-describedby="long_descriptionHelp" placeholder="Enter long description" name="long_description">
-            <small id="long_descriptionHelp" class="form-text text-muted">Some help text about long description</small>
+            <small id="long_descriptionHelp" class="form-text text-muted">"Describe about your resource"</small>
         </div>
         <div class="form-group">
             <label for="file">Resource File</label>
             <input type="file" class="form-control-file" id="file" name="resource_file">
-            <small id="fileHelp" class="form-text text-muted">Files may be PDFs, JPGs, PNGs, EPUBs etc.</small>
+            <small id="fileHelp" class="form-text text-muted">Files may be PDF, JPG, PNG, EPUB</small>
         </div>
         <div class="form-group">
             <label for="author">Name of Author</label>
@@ -72,11 +80,12 @@ function getAllCategories($connection) {
         <div class="form-group">
             <label for="header_image">Header Image</label>
             <input type="file" class="form-control-file" id="header_image" name="header_image">
-            <small id="imageHelp" class="form-text text-muted">Some help text about Image</small>
+            <small id="imageHelp" class="form-text text-muted">This image will be shown at the front of the resource</small>
         </div>
         <input type="submit" class="btn btn-primary btn-block" value="Upload Study Resource" name="upload">
     </form>
 </div>
-<?php include_once "footer.php" ?>
+<?php
+include_once "footer.php" ?>
 
 

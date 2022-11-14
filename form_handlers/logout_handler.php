@@ -1,10 +1,8 @@
 <?php
-if (isset ($_POST['logout']))
-{
-    var_dump($_POST);
+    session_start();
     $_SESSION['logged_in'] = false;
-    $_SESSION['email'] = "";
+    $_SESSION['success_msg'] = "You have been logout successfully.";
+    $_SESSION['title_msg'] = "Logout";
     session_destroy();
-
-    header("Location:../login.php?success_message=You have successfully logged out.");
-}
+    header("Location:../login.php");
+?>

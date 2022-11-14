@@ -4,7 +4,7 @@ include_once "navbar.php";
 
 function getAllResources($connection) {
     /* Selecting all the data from the category table. */
-    $sql = "SELECT * FROM `resource` WHERE is_active = 1";
+    $sql = "SELECT * FROM `resource` WHERE is_active = 1 AND category = '".$_GET['category_id']."' ";
     /* Preparing the SQL statement. */
     $statement = $connection->prepare($sql);
     /* Executing the SQL statement. */
@@ -14,10 +14,16 @@ function getAllResources($connection) {
     /* Creating an empty array. */
     $resources = array();
     /* Fetching the data from the database and putting it into an array. */
-    while ($row = $result->fetch_assoc()) {
-        /* Adding the row to the array. */
-        $resources[] = $row;
-    }
+        $count = $result->num_rows;
+        if($count > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $resources[] = $row;
+            }
+        }
+        else{
+            echo "<br><h3>No results found</h3>";
+        }
+
     /* Returning the array of categories. */
     return $resources;
 }
@@ -1370,6 +1376,9 @@ function getAllResources($connection) {
                         <div class="card-text">
                             <p>
                                <b> <?php echo $resource['subject']; ?> </b>
+                            </p>
+                            <p>
+                                <?php echo $resource['short_description']; ?>
                             </p>
                         </div>
 
